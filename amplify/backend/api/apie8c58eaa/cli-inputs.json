@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/patients/{patientId}": {
+      "name": "/patients/{patientId}",
+      "lambdaFunction": "amplifyappf06a6146",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}
