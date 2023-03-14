@@ -1,52 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
-import Amplify, { API } from 'aws-amplify'
+/* src/App.js */
 import React, { useEffect, useState } from 'react'
+import { Amplify, API, graphqlOperation } from 'aws-amplify'
+import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+import {Routes,Route} from "react-router-dom";
 
-const myAPI = 'apie8c58eaa'
-const path = '/patients'; 
+import awsExports from "./aws-exports";
+import Patient from './Patient';
+Amplify.configure(awsExports);
 
-const App = () => {
-  const [input, setInput] = useState("")
-  const [patients, setpatients] = useState([])
+const initialState = { name: '', description: '' }
 
-  //Function to fetch from our backend and update patients array
-  function getpatient(e) {
-    let patientId = e.input
-    API.get(myAPI, path + "/" + patientId)
-       .then(response => {
-         console.log(response)
-         let newpatients = [...patients]
-         newpatients.push(response)
-         setpatients(newpatients)
+const App = ({ signOut, user }) => {
+  const [formState, setFormState] = useState(initialState)
+  // const [todos, setTodos] = useState([])
 
-       })
-       .catch(error => {
-         console.log(error)
-       })
+  
+  function setInput(key, value) {
+    setFormState({ ...formState, [key]: value })
   }
 
-  return (
-    
-    <div className="App">
-      <h1>React App</h1>
-      <div>
-          <input placeholder="patient id" type="text" value={input} onChange={(e) => setInput(e.target.value)}/>      
-      </div>
-      <br/>
-      <button onClick={() => getpatient({input})}>Get patient From Backend</button>
 
-      <h2 style={{visibility: patients.length > 0 ? 'visible' : 'hidden' }}>Response</h2>
-      {
-       patients.map((thispatient, index) => {
-         return (
-        <div key={thispatient.patientId}>
-          <span><b>patientId:</b> {thispatient.patientId} - <b>patientName</b>: {thispatient.patientName}</span>
-        </div>)
-       })
-      }
+
+  return (
+    <div style={styles.container}>
+      <Heading level={1}>Hello {user.username}</Heading>
+      <Button onClick={signOut} style={styles.button}>Sign out</Button>
+      {/* <h2>Amplify Todos</h2> */}
+      <Routes>
+        <Route path="/" element={<Patient />}></Route>
+      </Routes>
+   
     </div>
   )
 }
 
-export default App;
+const styles = {
+  container: { width: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20 },
+  todo: {  marginBottom: 15 },
+  input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
+  todoName: { fontSize: 20, fontWeight: 'bold' },
+  todoDescription: { marginBottom: 0 },
+  button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
+}
+
+export default withAuthenticator(App);
