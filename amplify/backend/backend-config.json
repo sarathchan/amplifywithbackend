@@ -1,5 +1,26 @@
 {
   "api": {
+    "amplifyapp": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 30,
+              "description": "api key description"
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    },
     "apie8c58eaa": {
       "dependsOn": [
         {
@@ -64,6 +85,13 @@
           "resourceName": "amplifyappf06a6146"
         }
       ]
+    }
+  },
+  "storage": {
+    "imagesdemo": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
     }
   }
 }

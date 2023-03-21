@@ -8,12 +8,13 @@
 import * as React from "react";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import { UntitledModel } from "./models";
-import { fetchByPath, validateField } from "./ui-components/utils";
+import { UntitledModel } from "../models";
+import { fetchByPath, validateField } from "./utils";
 import { DataStore } from "aws-amplify";
-export default function UntitledModelCreateForm(props) {
+export default function UntitledModelUpdateForm(props) {
   const {
-    clearOnSuccess = true,
+    id: idProp,
+    untitledModel,
     onSuccess,
     onError,
     onSubmit,
@@ -32,10 +33,25 @@ export default function UntitledModelCreateForm(props) {
   );
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
-    setEmail(initialValues.email);
-    setPhoneNumber(initialValues.phoneNumber);
+    const cleanValues = untitledModelRecord
+      ? { ...initialValues, ...untitledModelRecord }
+      : initialValues;
+    setEmail(cleanValues.email);
+    setPhoneNumber(cleanValues.phoneNumber);
     setErrors({});
   };
+  const [untitledModelRecord, setUntitledModelRecord] =
+    React.useState(untitledModel);
+  React.useEffect(() => {
+    const queryData = async () => {
+      const record = idProp
+        ? await DataStore.query(UntitledModel, idProp)
+        : untitledModel;
+      setUntitledModelRecord(record);
+    };
+    queryData();
+  }, [idProp, untitledModel]);
+  React.useEffect(resetStateValues, [untitledModelRecord]);
   const validations = {
     email: [],
     phoneNumber: [],
@@ -97,12 +113,13 @@ export default function UntitledModelCreateForm(props) {
               modelFields[key] = undefined;
             }
           });
-          await DataStore.save(new UntitledModel(modelFields));
+          await DataStore.save(
+            UntitledModel.copyOf(untitledModelRecord, (updated) => {
+              Object.assign(updated, modelFields);
+            })
+          );
           if (onSuccess) {
             onSuccess(modelFields);
-          }
-          if (clearOnSuccess) {
-            resetStateValues();
           }
         } catch (err) {
           if (onError) {
@@ -110,7 +127,7 @@ export default function UntitledModelCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "UntitledModelCreateForm")}
+      {...getOverrideProps(overrides, "UntitledModelUpdateForm")}
       {...rest}
     >
       <TextField
@@ -168,13 +185,14 @@ export default function UntitledModelCreateForm(props) {
         {...getOverrideProps(overrides, "CTAFlex")}
       >
         <Button
-          children="Clear"
+          children="Reset"
           type="reset"
           onClick={(event) => {
             event.preventDefault();
             resetStateValues();
           }}
-          {...getOverrideProps(overrides, "ClearButton")}
+          isDisabled={!(idProp || untitledModel)}
+          {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
         <Flex
           gap="15px"
@@ -184,7 +202,10 @@ export default function UntitledModelCreateForm(props) {
             children="Submit"
             type="submit"
             variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
+            isDisabled={
+              !(idProp || untitledModel) ||
+              Object.values(errors).some((e) => e?.hasError)
+            }
             {...getOverrideProps(overrides, "SubmitButton")}
           ></Button>
         </Flex>

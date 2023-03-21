@@ -13,20 +13,17 @@ const initialState = { name: '', description: '' }
 
 const App = ({ signOut, user }) => {
   const [formState, setFormState] = useState(initialState)
-  // const [todos, setTodos] = useState([])
-
   
   function setInput(key, value) {
     setFormState({ ...formState, [key]: value })
   }
 
 
-
   return (
     <div style={styles.container}>
       <Heading level={1}>Hello {user.username}</Heading>
       <Button onClick={signOut} style={styles.button}>Sign out</Button>
-      {/* <h2>Amplify Todos</h2> */}
+    
       <Routes>
         <Route path="/" element={<Patient />}></Route>
       </Routes>

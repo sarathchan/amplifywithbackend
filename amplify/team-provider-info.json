@@ -15,7 +15,7 @@
       "function": {
         "amplifyappf06a6146": {
           "deploymentBucketName": "amplify-amplifyapp-dev-105327-deployment",
-          "s3Key": "amplify-builds/amplifyappf06a6146-7432666b7a6476313030-build.zip"
+          "s3Key": "amplify-builds/amplifyappf06a6146-662f6f79425153555667-build.zip"
         }
       },
       "api": {
@@ -23,6 +23,9 @@
       },
       "auth": {
         "amplifyapp0318d2ef": {}
+      },
+      "storage": {
+        "imagesdemo": {}
       }
     }
   }
